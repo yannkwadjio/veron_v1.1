@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" th:href="@{/img/ico/ico.ico}" type="image/x-icon">
+  <link rel="stylesheet" th:href="@{/fontawesome-free-6.6.0-web/css/all.css}">
+  <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/css/dataTable-bootstrap.css}">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/choice.css}">
+
+
+  <script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+  <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/dataTable.js}"></script>
+  <script type="text/javascript" th:src="@{/js/dataTable-bootstrap.js}"></script>
+  <script type="text/javascript" th:src="@{/js/choice.js}"></script>
+  <title>Ventes: Veron</title>
+  <style>
+    body {
+            font-family: 'Poppins', sans-serif;
+            font-size:15px;
+            margin: 0;
+            padding: 0;
+            color: black;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            padding: 20px;
+            color: white;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .titreApp {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            letter-spacing: 1px;
+            color: white;
+            box-shadow:0px 0px 4px white;
+        }
+
+        .nav-link {
+            font-size: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: transparent;
+            color: white;
+            border-radius: 12px;
+            transition: background-color 0.3s, transform 0.3s;
+            display: flex;
+            align-items: center;
+            font-weight:bold;
+        }
+
+        .nav-link:hover {
+            background-color:white;
+            color: black;
+            transform: translateX(10px);
+        }
+
+        .nav-link i {
+            margin-right: 10px;
+        }
+
+        .nav-item {
+            color:white;
+        }
+
+        .nomUtil {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 9px;
+            font-style:italic;
+            color: black;
+            display: flex;
+            align-items: center;
+            gap:10px;
+            padding: 5px;
+            z-index: 500;
+        }
+
+        .nomUtil h6 {
+            margin: 0;
+            margin-right: 10px;
+        }
+
+
+
+        footer {
+            font-size: 15px;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            height: 25px;
+            color: white;
+        }
+
+
+
+
+.nav-item button{
+border:none
+}
+#form-store{
+display:none
+;}
+
+
+ #container_sale{
+position:absolute;
+left:18%;
+top:10%;
+width:80%;
+    }
+
+
+#toast_alert{
+    position:absolute;
+    right:5px;
+    bottom:5px;
+    opacity:0.8;
+    padding:5%;
+    font-size:15px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <nav class="sidebar bg-primary">
+    <div class="titreApp">
+      VERON
+    </div>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/home}"><i class="fa-solid fa-house-user me-2"></i> Menu principal</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/sale}"><i class="fas fa-shopping-cart me-2"></i>Ventes<span class="ms-2 badge bg-danger" th:text="${{mt_sale}}"></span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/invoice}"><i class="fa-solid fa-file-lines me-2"></i>Factures<span class="ms-2 badge bg-danger" th:text="${{mt_facture}}"></span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="getCustomer"><i class="fa-solid fa-users-rectangle me-2"></i> Clients</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/state-sales}"><i class="fa-solid fa-database me-2"></i>Consulter</a>
+      </li>
+      <li class="nav-item">
+        <h6 class="nav-link" id="refCash" th:if="${cash != null}" th:text="${cash.refCash}" style="display:none"><i class="fa-solid fa-cash-register"></i></h6>
+      </li>
+      <li class="nav-item">
+        <h6 class="nav-link" id="refStore" th:if="${store != null}" th:text="${store}" style="display:none"><i class="fa-solid fa-cash-register"></i></h6>
+      </li>
+    </ul>
+
+  </nav>
+
+  <div class="nomUtil">
+    <div class="d-flex justify-content-end mb-4">
+      <div class="d-flex align-items-center">
+        <h6 th:if="${cashier != 'pas de caisse'}"></h6>
+        <i class="fa-solid fa-user"></i>
+        <h6 class="mb-0 me-3" th:text="${nomUtil}+'/'+${cashier}"></h6>
+        <form th:action="@{/logout}" method="post" class="me-3">
+          <button type="submit" class="btn btn-light"><i class="fas fa-sign-out-alt"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <button type="button" class="btn btn-primary justify-content-center offset-1 w-25 d-none" data-bs-toggle="modal" data-bs-target="#creationCustomer" role="button" id="btn_client">
+    Créer
+  </button>
+
+  <div class="modal fade" id="creationCustomer" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary">
+          <h6 class="modal-title text-light" id="exampleModalToggleLabel3">Création d'un client/fournisseur</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form th:action="@{/customer_sale}" method="post" th:object="${tiersDto}" class="needs-validation" novalidate>
+            <div class="row mb-1">
+              <div class="col-md-6">
+                <label for="typeSelect" class="form-label">Type *</label>
+                <select name="type" id="typeSelect" th:field="*{type}" class="form-select" required>
+                  <option value="" disabled selected>Sélectionner un tiers</option>
+                  <option th:each="tier : ${tiers}" id="option_tier" th:value="${tier.name}" th:text="${tier.name}"></option>
+                </select>
+                <div class="valid-feedback">
+                  Type sélectionné
+                </div>
+                <div class="invalid-feedback">
+                  Type non sélectionné
+                </div>
+
+              </div>
+              <div class="col-md-6">
+                <label for="countrySelect" class="form-label">Pays *</label>
+                <select th:name="name" th:field="*{country}" class="form-select mb-2" aria-label=".form-select-sm example" id="countrySelect" required>
+                </select>
+                <div class="valid-feedback">
+                  Pays sélectionné
+                </div>
+                <div class="invalid-feedback">
+                  Pays non sélectionné
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-1">
+
+              <div class="col-md-6">
+                <label for="enterpriseSelect" class="form-label">Entreprise *</label>
+                <select th:name="name" th:field="*{enterprise}" class="form-select mb-2" aria-label=".form-select-sm example" id="enterpriseSelect" required>
+                  <option disabled selected th:value="@{Selectionner une entreprise}" th:text="@{Selectionner une entreprise}"></option>
+                </select>
+                <div class="valid-feedback">
+                  Entreprise sélectionné
+                </div>
+                <div class="invalid-feedback">
+                  Entreprise non sélectionné
+                </div>
+              </div>
+
+              <div class="col-md-6" id="div_pointFocal">
+                <label for="pointFocal" class="form-label">Point focal </label>
+                <input type="text" id="pointFocal" th:field="*{pointFocal}" class="form-control" placeholder="Point focal">
+              </div>
+
+            </div>
+
+            <div class="row mb-1">
+              <div class="col-md-6">
+                <label for="nameCustomer" class="form-label">Nom Complet *</label>
+                <input type="text" id="nameCustomer" th:field="*{fullName}" class="form-control" placeholder="Ex: Client" required>
+                <div class="valid-feedback">
+                  Nom complet renseigné
+                </div>
+                <div class="invalid-feedback">
+                  Nom complet non renseigné
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="emailCustomer" class="form-label">Adresse E-mail *</label>
+                <input type="email" id="emailCustomer" th:field="*{email}" class="form-control" placeholder="exemple@domain.com" required>
+              </div>
+            </div>
+            <div class="row mb-1">
+              <div class="col-md-6">
+                <label for="phoneNumber" class="form-label">Numéro de Téléphone *</label>
+                <input type="text" id="phoneNumber" th:field="*{phoneNumber}" class="form-control" placeholder="Ex: +237 6 12 34 56 78" required>
+                <div class="valid-feedback">
+                  Nº téléphone renseigné
+                </div>
+                <div class="invalid-feedback">
+                  Nº téléphone non renseigné
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="adresse" class="form-label">Adresse </label>
+                <input type="text" id="adresse" th:field="*{adresse}" class="form-control" placeholder="Ex: Cameroon" required>
+                <div class="valid-feedback">
+                  Adresse renseignée
+                </div>
+                <div class="invalid-feedback">
+                  Adresse non renseignée
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center mb-1">
+              <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de créer un nouveau client" type="submit" class="btn btn-primary">Enregistrer</button>
+            </div>
+          </form>
+
+          <table class="table table-striped table-hover caption-top border-1" id="table_customer">
+            <caption>Liste des clients</caption>
+            <thead>
+            <tr class="table-primary">
+              <th>id</th>
+              <th>Pays</th>
+              <th>Entreprise</th>
+              <th>client</th>
+              <th>Dépôt</th>
+              <th>Retrait</th>
+              <th>Solde</th>
+              <th>Crédit</th>
+              <th colspan="1">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="customer:${customers}">
+              <td th:text="${customer.refCustomer}"></td>
+              <td th:text="${customer.country}"></td>
+              <td th:text="${customer.enterprise}"></td>
+              <td th:text="${customer.fullName}"></td>
+              <td th:text="${{customer.depot}}"></td>
+              <td th:text="${{customer.retrait}}"></td>
+              <td th:text="${{customer.balance}}"></td>
+              <td th:text="${{customer.balanceCredit}}"></td>
+              <td>
+                <div th:if="${customer.fullName != 'CLIENT INCONNU'}">
+                  <button style="border:none"><i class="fa-regular fa-folder-open"></i></button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <th colspan="8"></th>
+            <th colspan="1"><button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'exporter la liste des clients'" class="btn btn-success"><a th:href="@{/export-clients-excel}">Excel</a></button></th>
+            </tfoot>
+          </table>
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button style="border:none;display:none;" data-bs-toggle="modal" data-bs-target="#updateCustomer" id="id_custom" role="button">Ouvrir</button>
+
+  <div class="modal fade" id="updateCustomer" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary">
+          <h5 class="modal-title text-light" id="exampleModalToggleLabel9">Modification d'un client/forunisseur</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form th:action="@{/update-by-ref}" method="post" class="needs-validation" novalidate>
+            <div class="row mb-3">
+              <div class="col-md-6 mb-1">
+                <label for="selectType" class="form-label">Type *</label>
+                <input name="type" id="selectType"  class="form-control" readonly>
+              </div>
+              <div class="col-md-6 mb-1">
+                <label for="selectPays" class="form-label">Pays *</label>
+                <input name="country"  id="selectPays" class="form-control" readonly>
+              </div>
+
+
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6 mb-1">
+                <label for="selectEnt" class="form-label">Entreprise *</label>
+                <input name="enterprise" id="selectEnt" class="form-control" readonly>
+              </div>
+              <div class="col-md-6 mb-1">
+                <label for="selectRef" class="form-label">Ref tiers *</label>
+                <input name="refCustomer" id="selectRef" class="form-control" readonly>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6 mb-1">
+                <label for="fullName" class="form-label">Nom Complet *</label>
+                <input type="text" id="fullName" name="fullName" class="form-control" required>
+                <div class="valid-feedback">
+                  Nom complet renseigné
+                </div>
+                <div class="invalid-feedback">
+                  Nom complet non renseigné
+                </div>
+
+              </div>
+              <div class="col-md-6 mb-1">
+                <label for="email" class="form-label">Adresse E-mail *</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="exemple@domain.com" required>
+                <div class="valid-feedback">
+                  E-mail correct
+                </div>
+                <div class="invalid-feedback">
+                  E-mail incorrect
+                </div>
+
+              </div>
+
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6 mb-1">
+                <label for="numberPhone" class="form-label">Numéro de Téléphone *</label>
+                <input type="text" id="numberPhone" name="phoneNumber" class="form-control" placeholder="Ex: +237 6 12 34 56 78" required>
+                <div class="valid-feedback">
+                  Nº téléphone renseigné
+                </div>
+                <div class="invalid-feedback">
+                  Nº téléphone non renseigné
+                </div>
+
+              </div>
+              <div class="col-md-6 mb-1">
+                <label for="adresses" class="form-label">Adresse </label>
+                <input type="text" id="adresses" name="adresse" class="form-control" placeholder="Ex: Cameroon" required>
+
+                <div class="valid-feedback">
+                  Adresse renseignée
+                </div>
+                <div class="invalid-feedback">
+                  Adresse non renseignée
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center mb-1">
+              <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de mettre à jour les informations du client" class="btn btn-primary">Enregistrer</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="container" id="container_sale">
+
+  <div class="d-flex justify-content-center mb-3" id="btn_creation">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#creationVente" role="button">
+      Créer une vente
+    </button>
+  </div>
+
+
+  <div class="modal fade" id="creationVente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary">
+          <h6 class="modal-title text-light" id="titleVentes">Ventes</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <div class="row mb-1">
+            <div class="col-6">
+              <label for="paymentMethod" class="form-label">Mode de paiement *</label>
+              <select id="paymentMethod"  class="form-select" required>
+                <option value="" disabled selected>Sélectionner un mode de paiement</option>
+                <option th:each="mode:${modes}" th:value="${mode.name}" th:text="${mode.name}"></option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label for="customer" class="form-label">Client *</label>
+              <select id="customer" class="form-select" required>
+                <option value="" disabled selected>Sélectionner un client</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-6">
+              <label for="service" class="form-label">Service *</label>
+              <select  class="form-select" id="service" required>
+                <option value="" disabled selected>Sélectionner un service</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label for="select_product" class="form-label" id="productName">Produit *</label>
+              <select id="select_product" class="form-select" required>
+                <option value="" disabled selected>Sélectionner un produit</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-1">
+
+            <div class="col-6">
+              <label for="lot" class="form-label" id="lotLabel">Lot</label>
+              <select id="lot" class="form-select" th:value="lot">
+                <option th:value="@{Sélectionner un lot}" th:text="@{Sélectionner un lot}"></option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label for="stockFinal" class="form-label">Stock</label>
+              <input type="number" id="stockFinal"  class="form-control" placeholder="Quantité en stock">
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-6">
+              <label for="sellingPrice" class="form-label" id="ps">Prix de vente</label>
+              <input type="number" id="sellingPrice"  th:value="sellingPrice"  class="form-control" placeholder="Prix de vente">
+            </div>
+            <div class="col-6">
+              <label for="quantity" class="form-label" id="qte">Qté *</label>
+              <input type="number" id="quantity"  th:value="quantity"  class="form-control" placeholder="Quantité" required>
+            </div>
+
+          </div>
+          <div class="row mb-1">
+            <div class="col-6">
+              <label for="totalPrice" class="form-label" id="pt">Prix total *</label>
+              <input type="number" id="totalPrice"  th:value="totalPrice"  class="form-control" placeholder="Prix total" readonly>
+            </div>
+            <div class="col-6">
+              <label for="remise" class="form-label">Remise</label>
+              <input type="number" id="remise"  class="form-control" placeholder="Remise" >
+            </div>
+          </div>
+          <div class="d-flex justify-content-center form-check form-switch d-none">
+              <input type="checkbox"  id="tva" value="T.V.A" class="form-check-input">
+          </div>
+
+          <div class="d-flex justify-content-center mb-1">
+            <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'ajouter une opération de vente" class="btn btn-primary" id="btn_ajout">Ajouter</button>
+          </div>
+
+          <table class="table table-hover table-striped" id="tableSaleTemp">
+            <thead class="table table-primary">
+            <tr>
+              <th scope="col">Nº</th>
+              <th scope="col">Lot</th>
+              <th scope="col">Produit</th>
+              <th scope="col">Qte</th>
+              <th scope="col">P.U.</th>
+              <th scope="col">P.T.</th>
+              <th scope="col">Action</th>
+              <th scope="col" class="d-none">Type</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot class="table-primary">
+            <tr>
+              <th colspan="2">Prix HT</th>
+              <th colspan="1" id="prixHT">0</th>
+              <th colspan="1">T.V.A.</th>
+              <th colspan="1" id="totalTva">0</th>
+              <th colspan="1">Total Général</th>
+              <th colspan="2" id="priceTotal">0</th>
+            </tr>
+            </tfoot>
+          </table>
+
+          <form th:action="@{/sale-validation}" method="post" th:object="${saleDto}">
+            <div class="d-flex justify-content-center">
+              <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de valider une opération de vente" class="btn btn-primary" id="btn_validation">Enregistrer</button>
+            </div>
+
+            <div class="d-none">
+              <label for="refCashValue" class="form-label">Caisse *</label>
+              <input name="" th:field="*{refCashValue}" id="refCashValue" readonly>
+
+              <label for="paymentMethodValue" class="form-label">Methode *</label>
+              <input type="text" id="paymentMethodValue"  th:field="*{paymentMethod}" th:value="paymentMethodValue"  class="form-control" readonly>
+
+
+              <label for="customerValue" class="form-label" style="display:none">Client *</label>
+              <input type="text" id="customerValue"  th:field="*{customerValue}" th:value="customerValue"  class="form-control"  readonly>
+
+
+              <label for="totalPriceValue" class="form-label" style="display:none">Prix *</label>
+              <input type="text" id="totalPriceValue"  th:field="*{totalPrice}" th:value="totalPriceValue"  class="form-control"  readonly>
+
+
+              <label for="remiseValue" class="form-label" style="display:none">Remise *</label>
+              <input type="text" id="remiseValue"  th:field="*{remise}" th:value="${remiseValue}"  class="form-control"  readonly>
+
+
+              <label for="serviceValue" class="form-label" style="display:none">Service *</label>
+              <input type="text" id="serviceValue"  th:field="*{serviceValue}" th:value="serviceValue"  class="form-control"  readonly>
+
+              <label for="tvaValues" class="form-label">T.V.A. *</label>
+              <input type="text" id="tvaValues"  th:field="*{tvaValues}" th:value="tvaValues"  class="form-control"  readonly>
+
+              <label for="store" class="form-label">T.V.A. *</label>
+              <input type="text" id="store"  th:field="*{store}"  class="form-control"  readonly>
+
+
+              <table class='table' id="tableSale">
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+
+          </form>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <table class="table table-striped table-hover" id="table_mvt_sale">
+    <thead class="table-primary">
+    <tr>
+      <th>ID</th>
+      <th>Réf.</th>
+      <th>Date</th>
+      <th>Agence</th>
+      <th>Client</th>
+      <th>Service</th>
+      <th>Produits</th>
+      <th>Mode</th>
+      <th>Prix HT</th>
+      <th>remise</th>
+      <th>TVA</th>
+      <th>Prix TTC</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="sale:${sales}">
+      <td th:text="${sale.idSale}"></td>
+      <td th:text="${sale.refSale}"></td>
+      <td th:text="${sale.saleDate}"></td>
+      <td th:text="${sale.agency}"></td>
+      <td th:text="${sale.customer}"></td>
+      <td th:text="${sale.service}"></td>
+      <td th:text="${sale.products}"></td>
+      <td th:text="${sale.paymentMethod}"></td>
+      <td th:text="${{sale.priceHT}}"></td>
+      <td th:text="${{sale.remise}}"></td>
+      <td th:text="${{sale.tva}}"></td>
+      <td th:text="${{sale.priceTTC}}"></td>
+    </tr>
+    </tbody>
+     <tfoot th:switch="sales">
+     <tr th:case="${sales!=null}">
+       <td colspan="11"></td>
+       <td colspan="1"><button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de visualiser le listing des ventes du jour" class="btn btn-success"><a>Excel</a></button></td>
+     </tr>
+     </tfoot>
+  </table>
+
+</div>
+
+
+
+  <div th:switch="${response}" id="toast_alert">
+
+    <div th:case="@{Opération effectuée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Crédit insuffisant}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Agence introuvable}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Solde caisse insuffisant}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+    <div th:case="@{Impossible d'effectuer cette opération, car vous avez déjà clôturer votre caisse}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Entreprise créé avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Pays non sélectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Adresse Email incorrecte}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Cette entreprise existe déjà}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Compense créée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Solde insuffisant}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Montant non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Entité destination non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Entité source non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Banque créée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+    <div th:case="@{Compte créé avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Cette banque existe déjà}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Nom de la banque non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Entreprise non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Pays non sélectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Ce compte existe déjà}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Banque non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Client/Fournisseur créé avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Adresse E-mail invalide}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Type de tiers non sélectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Adresse E-mail non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Nº téléphone non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Entreprise non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Pays non sélectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Nom client non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Cette adresse e-mail est utilisé par un autre client}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Ce numéro est utilisé par un autre client}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Cette adresse e-mail est déjà utilisé par un autre client}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Ce téléphone est déjà utilisé par un autre client}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Mise à jour effectuée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Famille de dépense créée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Famille de dépense non renseignée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Cette famille existe déjà}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Dépense créée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Famille de dépenses non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+
+    <div th:case="@{Nom de la dépense non renseignée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Cette dépense existe déjà}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Produit créé avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+
+    <div th:case="@{La date de péremption doit être postérieure à la date du jour}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Le prix de  vente ne doit pas être null}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Le prix d'achat ne doit pas être null}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Catégorie non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Entreprise non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Nom du produit non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Ce produit existe déjà}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Catégorie de service créée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+
+    <div th:case="@{Cette catégorie existe déjà}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Catégorie non renseignée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Service créé avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Entreprise non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+
+    <div th:case="@{Service non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Ce service existe déjà}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Mise à jour effectuée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Ce prix est déjà présent}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Ce service n'existe pas}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Agence créé avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Entreprise non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Ville non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Région non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Pays non sélectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Nom de l'agence non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Cette agence existe déjà}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Agence supprimée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Agence introuvable}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Caisse créée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Utilisateur assigné avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Agence non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Seul un caissier peut avoir une caisse}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Rôle non assigné à ce caissier}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Utilisateur non affecté}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Caisse non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Agence non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Magasin créé avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{entreprise non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Agence non sélectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{nom du magasin non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Un magasin porte déjà ce nom}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Employé créé avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+
+    <div th:case="@{Ce nº de téléphone est déjà utilisé par un autre utilisateur}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Agence non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Entreprise non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Rôle de l'employé non sélectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{les mots de passe ne sont pas identiques}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Le mot de passe doit contenir au moins un caractère spécial}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Le mot de passe doit contenir au moins 8 caractères}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Mot de passe non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Nº de téléphone non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Nom complet de l'employé non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{adresse e-mail non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Cet adresse e-mail est utilisé par un autre utilisateur}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Utilisateur introuvable}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Mise à jour effectué avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Ce numéro de téléphone est utilisé par un autre utilisateur}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Utilisateur affecté avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Ce utilisateur est déjà présent dans un autre magasin, bv effectuer un transfet inter-magasin}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Utilisateur transféré}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Achat effectué avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+
+    <div th:case="@{Solde caisse insuffisant pour effectuer cette opération}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Caisse non trouvée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Méthode de paiement non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Crédit insuffisant}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Destinataire non selectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Montant non renseigné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Mode de paiement non selectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Nº facture non selectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Client non selectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Produits non sélectionné}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Vente effectuée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Crédit insuffisant pour effectuer cette opération}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Caisse non trouvée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Méthode de paiement non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Produits non sélectionnés}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Vente effectuée avec succès}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Caisse non trouvée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Méthode de paiement non sélectionnée}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Produits non sélectionnés}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Impossible d'effectuer cette opération, car vous avez déjà clôturer votre caisse}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Crédit insuffisant}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+    <div th:case="@{Un client porté déjà ce nom}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+  </div>
+
+
+  <footer class="bg-primary">
+  © VERON v-1.0 - POWERED BY KWADJIO NANA Roméo Yannick
+</footer>
+
+<script th:src="@{/fontawesome-free-6.6.0-web/js/all.min.js}"></script>
+<script th:src="@{/js/sale.js}"></script>
+  <script th:src="@{/js/all.js}"></script>
+  <script>
+    $(document).ready(function () {
+      $('#table_customer').DataTable({
+        "paging": true,       // Activer la pagination
+        "searching": true,    // Activer la recherche (filtrage)
+        "ordering": true,     // Activer le tri sur les colonnes
+        "info": true,         // Afficher les informations de pagination
+"url": "//cdn.datatables.net/plug-ins/1.13.5/i18n/French.json"
+      });
+    });
+
+       $(document).ready(function () {
+      $('#table_mvt_sale').DataTable({
+        "paging": true,       // Activer la pagination
+        "searching": true,    // Activer la recherche (filtrage)
+        "ordering": true,     // Activer le tri sur les colonnes
+        "info": true,         // Afficher les informations de pagination
+"url": "//cdn.datatables.net/plug-ins/1.13.5/i18n/French.json"
+      });
+    });
+
+
+  </script>
+</body>
+</html>
+
+

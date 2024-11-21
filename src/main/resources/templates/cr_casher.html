@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" th:href="@{/img/ico/ico.ico}" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <title>Compte Rendu de Caisse</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-size:15px;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+          .content {
+            margin: 0 auto;
+          padding: 20px;
+          width:100%;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+
+<div class="content">
+<div class="row mb-3">
+    <div class="col-3"><img th:src="@{/img/logo/logo.jpg}" alt="Logo" width="50px"></div>
+    <h3 class="col-7">COMPTE RENDU DE CAISSE</h3>
+    <div class="col-2"></div>
+</div>
+
+    <div class="row mb-3 display-6">
+        <h6 class="col-2" th:text="@{Date: }+${dte}">Date: </h6>
+        <h6 class="col-3" th:text="@{Agence: }+${agency}"></h6>
+        <h6 class="col-7" th:text="@{Responsable: }+${responsable}"></h6>
+    </div>
+    <div class="d-flex justify-content-end fw-bold">
+        <h6 th:text="@{Solde Initial: }+${{soldeInit}}"></h6>
+    </div>
+
+    <div class="row mb-3">
+        <table class="table table-striped border">
+            <thead class="table-primary">
+            <tr>
+                <th rowspan="2">Type</th>
+                <th colspan="2">Encaissement</th>
+                <th rowspan="2">Décaissement</th>
+            </tr>
+            <tr>
+                <td style="font-weight:bold">Principal</td>
+                <td style="font-weight:bold">Frais</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td style="font-weight:bold"> Achats</td>
+                <td> 0</td>
+                <td> 0</td>
+                <td th:text="${{mtAchat}}"></td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold"> Ventes</td>
+                <td th:text="${{mtVentes}}"> </td>
+                <td> 0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold"> Règlements facture</td>
+                <td th:text="${{reglement}}"> </td>
+                <td> 0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold"> Depense</td>
+                <td>0</td>
+                <td> 0</td>
+                <td th:text="${{mtDepenses}}"></td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold"> MAD</td>
+                <td th:text="${{mtMADEnc}}"></td>
+                <td>0</td>
+                <td th:text="${{mtMADDec}}"></td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold"> Autres versements</td>
+                <td th:text="${{mtAuv}}"></td>
+                <td> 0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold"> Autres retraits</td>
+                <td>0</td>
+                <td> 0</td>
+                <td th:text="${{mtAud}}"></td>
+            </tr>
+            </tbody>
+            <tfoot class="table-primary">
+            <tr>
+            <td style="font-weight:bold">Total Général</td>
+            <td th:text="${{totalEnc}}" style="font-weight:bold"></td>
+            <td style="font-weight:bold"> 0</td>
+            <td th:text="${{totalDec}}" style="font-weight:bold"></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="font-weight:bold"> Solde théorique</td>
+                <td th:text="${{soldeFin}}" style="font-weight:bold"></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="font-weight:bold"> Solde Physique</td>
+                <td th:text="${{soldePhysique}}" style="font-weight:bold"></td>
+
+            <tr>
+                <td colspan="3" style="font-weight:bold"> Ecart</td>
+                <td th:text="${{ecart}}" style="font-weight:bold"></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+
+<div class="d-flex justify-content-center">
+    <button type="submit" class="btn btn-primary" >Imprimer</button>
+</div>
+
+<script th:src="@{/js/all.js}"></script>
+<script th:inline="javascript">
+    let btnPrint=document.querySelector('button');
+    btnPrint.addEventListener('click',()=>{
+    btnPrint.style.display='none';
+    window.print();
+    async function viewCash(){
+    url=`http://localhost:8095/cash-bank`;
+    const response=await fetch(url);
+    if(!response.ok){
+    }else{const data=await response.json();}
+    }
+   viewCash();
+    })
+</script>
+
+</body>
+</html>

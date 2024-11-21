@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html class="h-100" lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" th:href="@{/img/ico/ico.ico}" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <title>Importation des bdd</title>
+</head>
+<style>
+    body {
+   font-family: 'Poppins', sans-serif;
+  font-size:15px;
+   background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+footer{
+font-size:15px;
+width:100%;
+position:absolute;
+bottom:0%;
+display:flex;
+flex-direction:row;
+justify-content: center;
+align-items:center;
+height:50px;
+opacity:0.7;
+ margin-top: 50px;
+}
+
+
+img{
+width:150px;
+}
+
+#toast_alert{
+    position:absolute;
+    right:5px;
+    bottom:5px;
+    opacity:0.8;
+    padding:5%;
+    font-size:15px;
+    }
+
+
+</style>
+<body class="h-100 bg-primary">
+
+<div class="d-flex flex-wrap p-3">
+  <div class="p-2 m-2">
+      <button class="btn btn-danger btn-xl" data-bs-toggle="modal" data-bs-target="#importAgency">Agences</button></li>
+  </div>
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importBank">Comptes bancaires</button></li>
+    </div>
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importCash">Caisses</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importLot">Lots</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importCrCash">Comptes rendus</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importCustomer">Clients</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importInvoice">Factures</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importMissing">Manquants</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importMvtCash">Mouvements de caisse</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importMvtCredit">Mouvements des u.v.</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importMvtStock">Mouvements du stock</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importPayement">Règlements</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importProduct">Produits</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importProductStock">Produits/Magasin</button></li>
+    </div>
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importProfit">Profits</button></li>
+    </div>
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importPurchaseOrder">Bons de commande</button></li>
+    </div>
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importSale">Ventes</button></li>
+    </div>
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importSellingService">Services</button></li>
+    </div>
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importSellingServiceCategory">Catégorie de services</button></li>
+    </div>
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importSpent">Dépense</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importStore">Magasins</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importSupplier">Fournisseurs</button></li>
+    </div>
+
+    <div class="p-2 m-2">
+        <button class="btn btn-danger btn-xl offset-1" data-bs-toggle="modal" data-bs-target="#importUser">Utilisateurs</button></li>
+    </div>
+</div>
+<div class="d-flex justify-content-center mb-5">
+    <a th:href="@{/login}" class="text-decoration-underline fst-italic fw-bolder">Page de connexion</a>
+</div>
+
+<div class="modal fade" id="importAgency" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel12">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-agency}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importBank" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel13">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-bank}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file1" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importCash" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel14">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-cash}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file2" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importLot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel15">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-lot}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file3" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importCrCash" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel16">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-cr-cash}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file4" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importCustomer" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel18">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-customer}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file6" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importInvoice" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel17">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-invoice}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file5" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importMissing" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel19">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-missing}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file7" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importMvtCash" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel20">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-mvt-cash}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file8" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importMvtCredit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel21">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-mvt-credit}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file9" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importMvtStock" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel22">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-mvt-stock}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file10" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importPayement" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel23">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-payment}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file11" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importProduct" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel24">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-product}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file12" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importProductStock" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel25">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-product-stock}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file13" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importProfit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel26">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-profit}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file14" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importPurchaseOrder" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel27">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-purchase-order}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file15" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importSale" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel28">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-sale}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file16" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importSellingService" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel29">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-selling-service}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file17" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importSellingServiceCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel30">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-selling-service-category}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file18" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importSpent" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel31">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-spent}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file19" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importStore" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel32">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-store}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file20" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importSupplier" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel33">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-supplier}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file21" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="importUser" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-light" id="exampleModalToggleLabel34">Importation...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/import-user}" method="post"  class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="file" id="file22" class="form-control" name="file" accept=".xls,.xlsx" required>
+                        <div class="valid-feedback">
+                            Fichier sélectionné
+                        </div>
+                        <div class="invalid-feedback">
+                            Fichier non sélectionné
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet d'importer la liste des agences" class="btn btn-primary">Importer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div th:switch="${response}" id="toast_alert">
+    <div th:case="@{Veuillez sélectionner un fichier Excel !}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Erreur lors de l'importation du fichier !}" class="alert alert-danger alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+    <div th:case="@{Le fichier a été importé avec succès !}" class="alert alert-success alert-dismissible p-3" role="alert" th:text="${response}">
+    </div>
+
+</div>
+
+<footer>
+    ©Copyright VERON v-1.0- POWERED BY KWADJIO NANA Roméo Yannick
+</footer>
+
+<script th:src="@{/js/all.js}"></script>
+</body>
+</html>

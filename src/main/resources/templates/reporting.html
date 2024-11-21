@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" th:href="@{/img/ico/ico.ico}" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{/fontawesome-free-6.6.0-web/css/all.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/dataTable-bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/choice.css}">
+
+
+    <script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/dataTable.js}"></script>
+    <script type="text/javascript" th:src="@{/js/dataTable-bootstrap.js}"></script>
+    <script type="text/javascript" th:src="@{/js/choice.js}"></script>
+
+    <title>Reporting: Veron</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-size:15px;
+            margin: 0;
+            padding: 0;
+            color: black;
+              overflow:hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            padding: 20px;
+            color: white;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .titreApp {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            letter-spacing: 1px;
+            color: white;
+            box-shadow:0px 0px 4px white;
+        }
+
+        .nav-link {
+            font-size: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: transparent;
+            color: white;
+            border-radius: 12px;
+            transition: background-color 0.3s, transform 0.3s;
+            display: flex;
+            align-items: center;
+            font-weight:bold;
+        }
+
+        .nav-link:hover {
+            background-color:white;
+            color: black;
+            transform: translateX(10px);
+        }
+
+        .nav-link i {
+            margin-right: 10px;
+        }
+
+        .nav-item {
+            color:white;
+        }
+
+        .nomUtil {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 9px;
+            font-style:italic;
+            color: black;
+            display: flex;
+            align-items: center;
+            gap:10px;
+            padding: 5px;
+            z-index: 500;
+        }
+
+        .nomUtil h6 {
+            margin: 0;
+            margin-right: 10px;
+        }
+
+
+
+        footer {
+            font-size: 15px;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            height: 25px;
+            color: white;
+        }
+
+
+
+#toast_alert{
+    position:absolute;
+    right:5px;
+    bottom:5px;
+    opacity:0.8;
+    padding:5%;
+    font-size:15px;
+    }
+
+.nav-item button{
+border:none
+}
+
+
+ #container_reporting{
+   position:absolute;
+   left:270px;
+   top:9%;
+   width:81%;
+        }
+
+       .card-body h6{
+        color:white;
+        font-weight:bold;
+        }
+
+        label{
+        font-weight:bold;
+        color: white;
+        }
+
+
+        #btn-reset{
+        position:absolute;
+        right:15px;
+        bottom:5px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="d-flex" style="z-index:100">
+
+    <nav class="sidebar bg-primary">
+        <div class="titreApp">
+            VERON
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/home}"><i class="fa-solid fa-house-user me-2"></i> Accueil</a>
+            </li>
+        </ul>
+
+    </nav>
+
+    <div class="nomUtil">
+        <div class="d-flex justify-content-end mb-4">
+            <div class="d-flex align-items-center">
+                <h6 th:if="${cashier != 'pas de caisse'}"></h6>
+                <i class="fa-solid fa-user"></i>
+                <h6 class="mb-0 me-3" th:text="${nomUtil}+'/'+${cashier}"></h6>
+                <form th:action="@{/logout}" method="post" class="me-3">
+                    <button type="submit" class="btn btn-light"><i class="fas fa-sign-out-alt"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="container" id="container_reporting">
+
+    <div class="d-flex flex-wrap">
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Mvts de caisse</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewMvtCash" role="button">Visualiser</button>
+            </div>
+        </div>
+
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Mvts de stock</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewMvtStock" role="button">Visualiser</button>
+            </div>
+        </div>
+
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Mvt des crédits</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewMvtCredit" role="button">Visualiser</button>
+            </div>
+        </div>
+
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Listing des factures</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewInvoice" role="button">Visualiser</button>
+            </div>
+        </div>
+
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Listing des règlements</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewPayment" role="button">Visualiser</button>
+            </div>
+        </div>
+
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Bons de commande</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewPurchaseOrder" role="button">Visualiser</button>
+            </div>
+        </div>
+
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Listing des ventes/globales</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewSales" role="button">Visualiser</button>
+            </div>
+        </div>
+
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Listing des ventes/detaillées</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewSalesDetail" role="button">Visualiser</button>
+            </div>
+        </div>
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Listing des produits</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewProduct" role="button">Visualiser</button>
+            </div>
+        </div>
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Listing produits/lots</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewProductLot" role="button">Visualiser</button>
+            </div>
+        </div>
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Profit par date</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewProfit" role="button">Visualiser</button>
+            </div>
+        </div>
+
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Listing des dépenses</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewSpent" role="button">Visualiser</button>
+            </div>
+        </div>
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Listing des manquants</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewMissing" role="button">Visualiser</button>
+            </div>
+        </div>
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Listing des magasins</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewStore" role="button">Visualiser</button>
+            </div>
+        </div>
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Etat des soldes(Crédits)</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewBalance" role="button">Visualiser</button>
+            </div>
+        </div>
+
+        <div class="card w-25 h-100 p-2">
+            <div class="card-body rounded bg-primary p-3" >
+                <h6>Historique des clients</h6>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#viewHistory" role="button">Visualiser</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="viewHistory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-center modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title" id="titleHistory">Historique des clients</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/viewHistory}" method="post">
+                        <label for="customer" class="form-label" style="color:black">Client * </label>
+                        <select name="customer" id="customer" class="form-select">
+                            <option selected disabled th:value="@{Sélectionner un client}" th:text="@{Sélectionner un client}"></option>
+                            <option th:each="customer:${customers}" th:value="${customer.fullName}" th:text="${customer.fullName}"></option>
+                        </select>
+
+                        <div class="container d-flex justify-content-center mb-3 bg-primary p-3 rounded">
+                            <div>
+                                <label for="startDate" class="form-label">Date de début *</label>
+                                <input type="date" name="startDate" id="startDateCustomer" class="form-control" required>
+                            </div>
+
+                            <div class="offset-1">
+                                <label for="endDate" class="form-label">Date de fin *</label>
+                                <input type="date" name="endDate" id="endDateCustomer" class="form-control" required>
+                            </div>
+
+                        </div>
+                        <div class="d-flex justify-content-center mb-2">
+                            <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de visualiser l'historique opération d'un client" class="btn btn-primary" id="btn_search_Customer">Rechercher</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="viewBalance" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-center modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title" id="titleCredit">Listing des soldes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Libellé</th>
+                            <th>Entité</th>
+                            <th>Solde</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="balance:${listBalance}">
+                            <td th:text="${balance.entity}"></td>
+                            <td th:text="${{balance.entite}}"></td>
+                            <td th:text="${{balance.balance}}"></td>
+                        </tr>
+                        </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="2">Total des crédits</td>
+                        <td colspan="1" th:text="${{totalUV}}"></td>
+                    </tr>
+                    </tfoot>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="viewStore" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title" id="staticBackdropLabel">Liste des magasins</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex mb-5">
+
+                        <div class="card d-flex flex-wrap mb-5 w-100" th:each="store:${stores}" id="card-store">
+                            <div class="card-body p-5 rounded bg-primary fs-4 text-align-center text-light fw-bolder font-monospace h-50 w-100" th:text="${store.refStore}">
+                            </div>
+                            <div class="storeName text-light bg-primary border p-3 font-monospace" th:text="${store.agencies}"></div>
+                            <button id="btn-val-store" class="btn btn-danger"><h6 class="font-monospace" th:text="${store.name}"></h6><span th:text="${store.refStore}" class="d-none"></span></button>
+                        </div>
+
+                    </div>
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-center mb-3" id="btn_store">
+                        <button type="button" class="btn btn-primary font-monospace" data-bs-toggle="modal" data-bs-target="#viewStore1" role="button">
+                            Détails Magasin...
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    <div class="modal fade" id="viewStore1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="titleBonCommande" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" >
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleBonCommande1">Magasin</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped table-hover" id="table_store">
+                        <thead>
+                        <tr>
+                            <th>ref.</th>
+                            <th>Catégorie</th>
+                            <th>Produit</th>
+                            <th>Stock</th>
+                            <th>lot</th>
+                            <th>Date per.</th>
+                            <th>prix</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="viewMissing" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewMissing">Listing des manquants par date</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center mb-3 bg-primary p-3 rounded">
+                        <div>
+                            <label for="startDate" class="form-label">Date de début *</label>
+                            <input type="date" name="startDate" id="startDateMissing" class="form-control" required>
+                        </div>
+
+                        <div class="offset-1">
+                            <label for="endDate" class="form-label">Date de fin *</label>
+                            <input type="date" name="startDate" id="endDateMissing" class="form-control" required>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de visualiser les manquants à une période donnée" class="btn btn-primary" id="btn_search_missing">Rechercher</button>
+                    </div>
+                    <table class="table table-striped table-hover" id="table_mvt_missing">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Agence</th>
+                            <th>Référence</th>
+                            <th>Responsable</th>
+                            <th>Montant</th>
+                            <th>Avance</th>
+                            <th>Reste</th>
+                            <th>Statut</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="viewSpent" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewSpent">Listing des dépenses par date</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center mb-3 bg-primary p-3 rounded">
+                        <div>
+                            <label for="startDate" class="form-label">Date de début *</label>
+                            <input type="date" name="startDate" id="startDateSpent" class="form-control" required>
+                        </div>
+
+                        <div class="offset-1">
+                            <label for="endDate" class="form-label">Date de fin *</label>
+                            <input type="date" name="startDate" id="endDateSpent" class="form-control" required>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de visualiser le listing des dépenses sur une période donnée" class="btn btn-primary" id="btn_search_spent">Rechercher</button>
+                    </div>
+                    <table class="table table-striped table-hover" id="table_mvt_spent">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Date.</th>
+                            <th>Agence</th>
+                            <th>Ref.</th>
+                            <th>Type</th>
+                            <th>Motif</th>
+                            <th>Principal</th>
+                            <th>Frais</th>
+                            <th>Sens</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="viewProfit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewProfit">Listing des profits</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center mb-3 bg-primary p-3 rounded">
+                        <div>
+                            <label for="startDate" class="form-label">Date de début *</label>
+                            <input type="date" name="startDate" id="startDateProfit" class="form-control" required>
+                        </div>
+
+                        <div class="offset-1">
+                            <label for="endDate" class="form-label">Date de fin *</label>
+                            <input type="date" name="startDate" id="endDateProfit" class="form-control" required>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de visualiser le profit généré sur une période donnée" id="btn_search_profit">Rechercher</button>
+                    </div>
+                    <table class="table table-striped table-hover" id="table_mvt_profit">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>id</th>
+                            <th>Date</th>
+                            <th>Entreprise</th>
+                            <th>Agence</th>
+                            <th>Profit</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="viewProductLot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewProductLot">Listing des produits par lot</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped table-hover" id="table_mvt_product_lot">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Magasin</th>
+                            <th>Ref.</th>
+                            <th>Catégorie</th>
+                            <th>Produit</th>
+                            <th>Prix d'achat</th>
+                            <th>Stock final</th>
+                            <th>Lot</th>
+                            <th>Date de péremption</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="productStock:${productStocks}">
+                            <td th:text="${productStock.store}"></td>
+                            <td th:text="${productStock.refProduct}"></td>
+                            <td th:text="${productStock.category}"></td>
+                            <td th:text="${productStock.name}"></td>
+                            <td th:text="${{productStock.purchasePrice}}"></td>
+                            <td th:text="${{productStock.finalStock}}"></td>
+                            <td th:text="${productStock.lot}"></td>
+                            <td th:text="${productStock.dateExpiration}"></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="viewProduct" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewProduct">Listing des produits</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped table-hover" id="table_mvt_product">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>entreprise</th>
+                            <th>Ref.</th>
+                            <th>Catégorie</th>
+                            <th>Produit</th>
+                            <th>Prix d'achat</th>
+                            <th>Prix de vente</th>
+                            <th>Stock final</th>
+                            <th>Valeur</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="product:${products}">
+                            <td th:text="${product.enterprise}"></td>
+                            <td th:text="${product.refProduct}"></td>
+                            <td th:text="${product.category}"></td>
+                            <td th:text="${product.name}"></td>
+                            <td th:text="${{product.purchasePrice}}"></td>
+                            <td th:text="${{product.sellingPrice}}"></td>
+                            <td th:text="${{product.finalStock}}"></td>
+                            <td th:text="${{product.finalValue}}"></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="viewSales" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewSales">Listing ventes par date</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center mb-3 bg-primary p-3 rounded">
+                        <div>
+                            <label for="startDate" class="form-label">Date de début *</label>
+                            <input type="date" name="startDate" id="startDateSale" class="form-control" required>
+                        </div>
+
+                        <div class="offset-1">
+                            <label for="endDate" class="form-label">Date de fin *</label>
+                            <input type="date" name="startDate" id="endDateSale" class="form-control" required>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de visualiser le listing des ventes sur une période donnée" class="btn btn-primary" id="btn_search_sale">Rechercher</button>
+                    </div>
+                    <table class="table table-striped table-hover" id="table_mvt_sale">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Agence</th>
+                            <th>Ref.</th>
+                            <th>Client</th>
+                            <th>Service</th>
+                            <th>Produits</th>
+                            <th>Mode</th>
+                            <th>Prix H.T.</th>
+                            <th>Remise</th>
+                            <th>T.V.A.</th>
+                            <th>Prix T.T.C.</th>
+                            <th>Lot</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="viewSalesDetail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewSalesDetail">Listing ventes détaillées par date</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center mb-3 bg-primary p-3 rounded">
+                        <div>
+                            <label for="startDate" class="form-label">Date de début *</label>
+                            <input type="date" name="startDate" id="startDateSaleD" class="form-control" required>
+                        </div>
+
+                        <div class="offset-1">
+                            <label for="endDate" class="form-label">Date de fin *</label>
+                            <input type="date" name="startDate" id="endDateSaleD" class="form-control" required>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de visualiser le listing des ventes sur une période donnée" class="btn btn-primary" id="btn_search_saleD">Rechercher</button>
+                    </div>
+                    <table class="table table-striped table-hover" id="table_mvt_saleD">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Agence</th>
+                            <th>Ref.</th>
+                            <th>Client</th>
+                            <th>Service</th>
+                            <th>Produits</th>
+                            <th>Mode</th>
+                            <th>Prix H.T.</th>
+                            <th>Remise</th>
+                            <th>T.V.A.</th>
+                            <th>Prix T.T.C.</th>
+                            <th>Lot</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="viewMvtCash" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewMvtCash">Listing opérations par date</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center mb-3 bg-primary p-3 rounded">
+                        <div>
+                            <label for="startDate" class="form-label">Date de début *</label>
+                            <input type="date" name="startDate" id="startDate" class="form-control" required>
+                        </div>
+
+                        <div class="offset-1">
+                            <label for="endDate" class="form-label">Date de fin *</label>
+                            <input type="date" name="startDate" id="endDate" class="form-control" required>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de visualiser les mouvements de caisse sur une période donnée" class="btn btn-primary" id="btn_search">Rechercher</button>
+                    </div>
+                    <table class="table table-striped table-hover" id="table_mvt_cash">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Date.</th>
+                            <th>Agence</th>
+                            <th>Ref.</th>
+                            <th>Type</th>
+                            <th>Motif</th>
+                            <th>Principal</th>
+                            <th>Frais</th>
+                            <th>Sens</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="viewMvtStock" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewMvtStock">Listing mouvements stock par date</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center mb-3 bg-primary p-3 rounded">
+                        <div>
+                            <label for="startDate" class="form-label">Date de début *</label>
+                            <input type="date" name="startDate" id="startDateStock" class="form-control" required>
+                        </div>
+
+                        <div class="offset-1">
+                            <label for="endDate" class="form-label">Date de fin *</label>
+                            <input type="date" name="startDate" id="endDateStock" class="form-control" required>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de visualiser les mouvements du stock à une periode donnée" class="btn btn-primary" id="btn_search_stock">Rechercher</button>
+                    </div>
+
+                    <table class="table table-striped table-hover" id="table_mvt_stock">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Date.</th>
+                            <th>Ref.</th>
+                            <th>Magasin 1</th>
+                            <th>Magasin 2</th>
+                            <th>Categorie</th>
+                            <th>Produit</th>
+                            <th>S.I</th>
+                            <th>Entrées</th>
+                            <th>Sorties</th>
+                            <th>S.F.</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="viewMvtCredit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewMvtCredit">Listing mouvements crédit par date</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center mb-3 bg-primary p-3 rounded">
+                        <div>
+                            <label for="startDate" class="form-label">Date de début *</label>
+                            <input type="date" name="startDate" id="startDateCredit" class="form-control" required>
+                        </div>
+
+                        <div class="offset-1">
+                            <label for="endDate" class="form-label">Date de fin *</label>
+                            <input type="date" name="startDate" id="endDateCredit" class="form-control" required>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet de visualiser les mouvements à une période donnée" class="btn btn-primary" id="btn_search_credit">Rechercher</button>
+                    </div>
+                    <table class="table table-striped table-hover" id="table_mvt_credit">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Ref.</th>
+                            <th>Source</th>
+                            <th>Destination</th>
+                            <th>montant</th>
+                            <th>Statut</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="viewInvoice" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewInvoice">Listing des factures</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <table class="table table-striped table-hover" id="table_Invoice">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Agence</th>
+                            <th>Ref.</th>
+                            <th>Client</th>
+                            <th>Motif</th>
+                            <th>montant</th>
+                            <th>Avance</th>
+                            <th>Reste</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${invoices != null}" th:each="invoice:${invoices}">
+                            <td th:text="${invoice.dateCreation}"></td>
+                            <td th:text="${invoice.agency}"></td>
+                            <td th:text="${invoice.refInvoice}"></td>
+                            <td th:text="${invoice.customer}"></td>
+                            <td th:text="${invoice.motif}"></td>
+                            <td th:text="${{invoice.amount}}"></td>
+                            <td th:text="${{invoice.advance}}"></td>
+                            <td th:text="${{invoice.rest}}"></td>
+                        </tr>
+                        <tr th:if="${invoices == null}">
+                            <td colspan="8">Aucune donnée trouvée</td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="viewPayment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewPayment">Listing des règlements</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <table class="table table-striped table-hover" id="table_payment">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Agence</th>
+                            <th>Facture</th>
+                            <th>Montant</th>
+                            <th>Versement</th>
+                            <th>Reste</th>
+                            <th>Methode</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${payments != null}" th:each="payment:${payments}">
+                            <td th:text="${payment.dateCreation}"></td>
+                            <td th:text="${payment.agency}"></td>
+                            <td th:text="${payment.invoice}"></td>
+                            <td th:text="${{payment.amountInvoice}}"></td>
+                            <td th:text="${{payment.amount}}"></td>
+                            <td th:text="${{payment.rest}}"></td>
+                            <td th:text="${payment.paymentMethod}"></td>
+                        </tr>
+                        <tr th:if="${payments == null}">
+                            <td colspan="7">Aucune donnée trouvée</td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="viewPurchaseOrder" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h6 class="modal-title text-light" id="titleViewPurchaseOrder">Bon de commande</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center mb-3 bg-primary p-3 rounded">
+                        <div>
+                            <label for="startDate" class="form-label">Date de début *</label>
+                            <input type="date" name="startDate" id="startDateOrder" class="form-control" required>
+                        </div>
+
+                        <div class="offset-1">
+                            <label for="endDate" class="form-label">Date de fin *</label>
+                            <input type="date" name="startDate" id="endDateOrder" class="form-control" required>
+                        </div>
+
+                        <div class="offset-1">
+                            <label for="statutOrder" class="form-label">Statut *</label>
+                            <select name="statutPurchase" id="statutOrder" class="form-select">
+                                <option selected disabled th:value="@{Sélectionner un statut}" th:text="@{Sélectionner un statut}"></option>
+                                <option th:each="statut:${statuts}" th:value="${statut.name}" th:text="${statut.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Permet visualiser les bon de commande à une période donnée" class="btn btn-primary" id="btn_search_order">Rechercher</button>
+                    </div>
+
+                    <table class="table table-striped table-hover" id="table_purchase_order">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Agence</th>
+                            <th>Ref.</th>
+                            <th>Produits</th>
+                            <th>Prix H.T.</th>
+                            <th>T.V.A.</th>
+                            <th>Prix T.T.C.</th>
+                            <th>Remise</th>
+                            <th>Mode</th>
+                            <th>Statut</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+
+
+<footer class="text-center bg-primary">
+    © VERON v-1.0 - POWERED BY KWADJIO NANA Roméo Yannick
+</footer>
+<script th:src="@{/js/reporting.js}"></script>
+<script>
+
+    (function () {
+   'use strict'
+
+     // Fetch all the forms we want to apply custom Bootstrap validation styles to
+     var forms = document.querySelectorAll('.needs-validation')
+
+     // Loop over them and prevent submission
+     Array.prototype.slice.call(forms)
+       .forEach(function (form) {
+         form.addEventListener('submit', function (event) {
+           if (!form.checkValidity()) {
+             event.preventDefault()
+             event.stopPropagation()
+           }
+
+           form.classList.add('was-validated')
+         }, false)
+       })
+   })()
+</script>
+<script>
+    $(document).ready(function () {
+       $('#table_mvt_product_lot').DataTable({
+         "paging": true,       // Activer la pagination
+         "searching": true,    // Activer la recherche (filtrage)
+         "ordering": true,     // Activer le tri sur les colonnes
+         "info": true,         // Afficher les informations de pagination
+ "url": "//cdn.datatables.net/plug-ins/1.13.5/i18n/French.json"
+       });
+     });
+
+      $(document).ready(function () {
+       $('#table_mvt_product').DataTable({
+         "paging": true,       // Activer la pagination
+         "searching": true,    // Activer la recherche (filtrage)
+         "ordering": true,     // Activer le tri sur les colonnes
+         "info": true,         // Afficher les informations de pagination
+ "url": "//cdn.datatables.net/plug-ins/1.13.5/i18n/French.json"
+       });
+     });
+
+       $(document).ready(function () {
+       $('#table_Invoice').DataTable({
+         "paging": true,       // Activer la pagination
+         "searching": true,    // Activer la recherche (filtrage)
+         "ordering": true,     // Activer le tri sur les colonnes
+         "info": true,         // Afficher les informations de pagination
+ "url": "//cdn.datatables.net/plug-ins/1.13.5/i18n/French.json"
+       });
+     });
+
+      $(document).ready(function () {
+       $('#table_payment').DataTable({
+         "paging": true,       // Activer la pagination
+         "searching": true,    // Activer la recherche (filtrage)
+         "ordering": true,     // Activer le tri sur les colonnes
+         "info": true,         // Afficher les informations de pagination
+ "url": "//cdn.datatables.net/plug-ins/1.13.5/i18n/French.json"
+       });
+     });
+
+
+    const customer=document.querySelector('#customer');
+    const choices = new Choices(customer);
+
+</script>
+</body>
+</html>
+
