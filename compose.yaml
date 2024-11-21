@@ -1,0 +1,35 @@
+services:
+
+ postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: verondb
+      POSTGRES_USER: veron
+      POSTGRES_PASSWORD: veron
+    ports:
+      - '5432:5432'
+    networks:
+      - veron_network
+    volumes:
+      - veron_data:/data
+
+
+ adminer:
+    image: adminer:latest
+    restart: always
+    container_name: adminer-container
+    ports:
+      - '8096:8080'
+    depends_on:
+      - postgres
+    networks:
+      - veron_network
+
+networks:
+  veron_network:
+    driver: bridge
+
+volumes:
+  veron_data:
